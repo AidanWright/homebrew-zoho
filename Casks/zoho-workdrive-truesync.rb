@@ -3,10 +3,15 @@ cask "zoho-workdrive-truesync" do
   sha256 "a2fac025537e30e50064d6ace6f5becaf874e5776df7f95f7fdc6aaff245f93a"
 
   url "https://zohotruesync.nimbuspop.com/ZohoWorkDriveTS.pkg"
-  mirror "https://files-accl.zohopublic.com/public/tsmac/download/c488f53fb0fe339a8a3868a16d56ede6"
   name "Zoho WorkDrive TrueSync"
-  desc "Zoho WorkDrive sync client with File Provider support"
-  homepage "https://www.zoho.com/workdrive/"
+  desc "Desktop client for Zoho WorkDrive TrueSync"
+  homepage "https://www.zoho.com/workdrive/truesync.html"
+
+  livecheck do
+    url "https://www.zoho.com/workdrive/truesync.html"
+    strategy :page_match
+    regex(/ZohoWorkDriveTS[._-]v?(\d+(?:\.\d+)+)\.pkg/i)
+  end
 
   pkg "ZohoWorkDriveTS.pkg"
 
