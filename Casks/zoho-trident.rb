@@ -8,8 +8,8 @@ cask "zoho-trident" do
   homepage "https://www.zoho.com/trident/"
 
   livecheck do
-    url "https://downloads.zohocdn.com/trident/mac/apple/Trident.dmg"
-    strategy :header_match
+    url "https://downloads.zohocdn.com/trident/mac/apple/Trident_appcast.xml"
+    strategy :sparkle
   end
 
   app "Trident.app"

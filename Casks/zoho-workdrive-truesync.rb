@@ -8,9 +8,10 @@ cask "zoho-workdrive-truesync" do
   homepage "https://www.zoho.com/workdrive/truesync.html"
 
   livecheck do
-    url "https://www.zoho.com/workdrive/truesync.html"
-    strategy :page_match
-    regex(/ZohoWorkDriveTS[._-]v?(\d+(?:\.\d+)+)\.pkg/i)
+    url "https://files-accl.zohopublic.com/public/tsmac/download/c488f53fb0fe339a8a3868a16d56ede6"
+    strategy :header_match do |headers|
+      headers["etag"]&.match(/(\d+(?:\.\d+)+)/)&.captures&.first
+    end
   end
 
   pkg "ZohoWorkDriveTS.pkg"
