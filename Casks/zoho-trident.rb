@@ -1,6 +1,6 @@
 cask "zoho-trident" do
-  version "1.37.0"
-  sha256 "e98ab97c604a1b1dfdb20d49176587f7123b902e79f5c4ab7f0494c452daca10"
+  version "1.37.1"
+  sha256 "8c404d7625b22f09d717cbeea7facd9545d98ae9c7623619928182e3dd8e932d"
 
   url "https://downloads.zohocdn.com/trident/mac/apple/Trident.dmg"
   name "Zoho Trident"
