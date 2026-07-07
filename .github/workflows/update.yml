@@ -44,6 +44,14 @@ jobs:
         if: steps.check.outputs.update_needed == 'true'
         run: |
           set +e
+          branch="bump-${{ matrix.cask }}-${{ steps.check.outputs.version }}"
+          existing="$(gh pr list --head "$branch" --state open --json url --jq '.[0].url')"
+          if [ -n "$existing" ]; then
+            echo "reusing open PR $existing"
+            echo "url=$existing" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git push origin --delete "$branch" 2>/dev/null || true
           out="$(brew bump-cask-pr --no-fork --no-audit --no-style \
             --version="${{ steps.check.outputs.version }}" \
             "$TAP/${{ matrix.cask }}" 2>&1)"
