@@ -42,10 +42,13 @@ jobs:
         id: pr
         if: steps.check.outputs.update_needed == 'true'
         run: |
+          set +e
           out="$(brew bump-cask-pr --no-fork --no-audit --no-style \
             --version="${{ steps.check.outputs.version }}" \
             "$TAP/${{ matrix.cask }}" 2>&1)"
+          rc=$?
           echo "$out"
+          [ $rc -eq 0 ] || exit $rc
           url="$(printf '%s\n' "$out" | grep -oE 'https://github.com/[^ ]+/pull/[0-9]+' | tail -1)"
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
