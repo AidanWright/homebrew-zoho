@@ -61,6 +61,9 @@ jobs:
           [ $rc -eq 0 ] || exit $rc
           echo "url=$(pr_url)" >> "$GITHUB_OUTPUT"
 
-      - name: Enable auto-merge
+      - name: Merge
         if: steps.check.outputs.update_needed == 'true' && steps.pr.outputs.url != ''
-        run: gh pr merge "${{ steps.pr.outputs.url }}" --auto --squash --delete-branch
+        run: |
+          url="${{ steps.pr.outputs.url }}"
+          gh pr merge "$url" --squash --delete-branch --auto \
+            || gh pr merge "$url" --squash --delete-branch
