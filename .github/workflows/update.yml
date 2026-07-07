@@ -45,7 +45,8 @@ jobs:
         run: |
           set +e
           branch="bump-${{ matrix.cask }}-${{ steps.check.outputs.version }}"
-          existing="$(gh pr list --head "$branch" --state open --json url --jq '.[0].url')"
+          pr_url() { gh pr list --head "$branch" --state open --json url --jq '.[0].url'; }
+          existing="$(pr_url)"
           if [ -n "$existing" ]; then
             echo "reusing open PR $existing"
             echo "url=$existing" >> "$GITHUB_OUTPUT"
@@ -58,8 +59,7 @@ jobs:
           rc=$?
           echo "$out"
           [ $rc -eq 0 ] || exit $rc
-          url="$(printf '%s\n' "$out" | grep -oE 'https://github.com/[^ ]+/pull/[0-9]+' | tail -1)"
-          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "url=$(pr_url)" >> "$GITHUB_OUTPUT"
 
       - name: Enable auto-merge
         if: steps.check.outputs.update_needed == 'true' && steps.pr.outputs.url != ''
