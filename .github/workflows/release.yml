@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["Update casks"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Cut release when a cask version changed
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          sha="$(git rev-parse HEAD)"
+
+          versions() {
+            git ls-tree -r --name-only "$1" -- Casks | grep '\.rb$' | sort | while read -r f; do
+              v="$(git show "$1:$f" | awk -F'"' '/^[[:space:]]*version /{print $2; exit}')"
+              printf '%s=%s\n' "$(basename "$f" .rb)" "$v"
+            done
+          }
+
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            released="$(git rev-parse -q --verify 'refs/tags/latest^{commit}' 2>/dev/null || true)"
+            if [ "$released" = "$sha" ]; then
+              echo "Commit $sha already released; nothing to do."
+              exit 0
+            fi
+            if [ -n "$released" ] && [ "$(versions "$released")" = "$(versions "$sha")" ]; then
+              echo "No cask version changed; nothing to release."
+              exit 0
+            fi
+          fi
+
+          base="v$(date -u +%Y.%m.%d)"
+          tag="$base"; n=1
+          while git rev-parse "refs/tags/$tag" >/dev/null 2>&1 || gh release view "$tag" >/dev/null 2>&1; do
+            tag="$base.$n"; n=$((n + 1))
+          done
+
+          notes="$(versions "$sha" | sed -E 's/^(.*)=(.*)$/- **\1** `\2`/')"
+
+          gh release create "$tag" --target "$sha" --title "$tag" --notes "$notes"
+
+          git tag -f latest "$sha"
+          git push -f origin refs/tags/latest
