@@ -9,7 +9,9 @@ cask "zoho-trident" do
 
   livecheck do
     url "https://downloads.zohocdn.com/trident/mac/apple/Trident_appcast.xml"
-    strategy :sparkle
+    strategy :sparkle do |item|
+      item.short_version
+    end
   end
 
   app "Trident.app"
