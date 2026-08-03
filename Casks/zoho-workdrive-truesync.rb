@@ -1,6 +1,6 @@
 cask "zoho-workdrive-truesync" do
-  version "5.13.0"
-  sha256 "fd12c1ef97338c558d89fce57a48560ea53f5294724839167804e57bb9b937fd"
+  version "5.14.0"
+  sha256 "655eb31548b86a597bda25d7f128516f1104e4a7259124e96bc7db7d43475831"
 
   url "https://zohotruesync.nimbuspop.com/ZohoWorkDriveTS.pkg"
   name "Zoho WorkDrive TrueSync"
